@@ -1,23 +1,9 @@
 const all = document.querySelector('#all')
 const tbody = document.querySelector('tbody')
-const active = document.querySelector("#active")
-let users = window.localStorage.getItem('users')
+const active = document.querySelector('#active')
 const selected = document.querySelector('#selected')
 const checkbox = document.querySelector('#all-items')
-const searchName = document.querySelector("#searchName")
-const allLi = active.parentNode.parentNode.parentNode.children
-// console.log(allLi)
-// console.log(activeSpan)
-users =  JSON.parse(users) || [{name: 'Umidjon', date: '31 January 2022', checked: false, active: false},
-    {name: 'Alex', date: '31 January 2022', checked: false, active: false},
-    {name: "Adam Cotter", date: "Dec 17 2017", checked: false,active: false},
-    {name: "Adam Alisherov", date: "Dec 18 2007",  checked: false,active: false},
-    {name: "Abror Cotter", date: "Dec 15 2017", checked: false,active: false},
-    {name: "Tom Jerriyev", date: "Dec 17 2019",  checked: false,active: false},
-    {name: "Jerry Tomov", date: "May 23 2006", checked: false,active: false},
-    {name: "Jeck Doejonov", date: "Dec 4 2017", checked: false,active: false},
-    {name: "Abror Ikramov", date: "Dec 2 2011", checked: false,active: false},
-]
+const searchName = document.querySelector('#searchName')
 
 let checked_checkbox = window.localStorage.getItem('all-checked')
 checked_checkbox = JSON.parse(checked_checkbox) || false
@@ -26,8 +12,8 @@ let selected_for_all = window.localStorage.getItem('selected')
 selected_for_all = JSON.parse(selected_for_all)
 
 if(!(selected_for_all && Object.keys(selected_for_all).length)) {
-        selected_for_all = {all: users.length, active: 0, selected: 0}
-    }
+    selected_for_all = {all: users.length, active: 0, selected: 0}
+}
 
 renderUsers(users)
 
@@ -40,7 +26,8 @@ function renderUsers(usersList) {
     selected.textContent = '/' + ' ' + selected_for_all.selected
 
     for(let user of usersList) {
-        const [tr, td1, div, input, label, td2, div2, i1, td3, td4, span1, td5, i2, td6, div3, btn1, btn2, i3] = createELement('tr', 'td', 'div', 'input', 'label',
+        const [tr, td1, div, input, label, td2, div2, i1, td3, td4, span1, td5, i2, td6, div3, btn1, btn2, i3] =
+            createElements('tr', 'td', 'div', 'input', 'label',
             'td', 'div', 'i', 'td', 'td', 'span', 'td', 'i', 'td', 'div', 'button', 'button', 'i')
 
         td1.setAttribute('class', 'align-middle')
@@ -96,21 +83,19 @@ function renderUsers(usersList) {
 
         input.addEventListener('change', function () {
             if(this.checked) {
-               user.checked = true
+                user.checked = true
                 selected_for_all.selected += 1
-                if(selected_for_all.selected == usersList.length) checked_checkbox = true
+                if(selected_for_all.selected === usersList.length) checked_checkbox = true
             } else {
                 user.checked = false
                 selected_for_all.selected -= 1
                 checked_checkbox = false
             }
 
-            window.localStorage.setItem('users', JSON.stringify(usersList))
-            window.localStorage.setItem('all-checked', JSON.stringify(checked_checkbox))
-            window.localStorage.setItem('selected', JSON.stringify(selected_for_all))
 
             renderUsers(usersList)
         })
+
         i2.onclick = function () {
             if(!user.active) {
                 i2.setAttribute('class', 'fa fa-fw text-secondary cursor-pointer fa-toggle-on')
@@ -121,9 +106,6 @@ function renderUsers(usersList) {
                 user.active = false
                 selected_for_all.active -= 1
             }
-            window.localStorage.setItem('users', JSON.stringify(users))
-            window.localStorage.setItem('all-checked', JSON.stringify(checked_checkbox))
-            window.localStorage.setItem('selected', JSON.stringify(selected_for_all))
 
             renderUsers(usersList)
         }
@@ -131,24 +113,54 @@ function renderUsers(usersList) {
         btn2.onclick = function () {
             usersList.splice(usersList.indexOf(user), 1)
             this.parentNode.parentNode.parentNode.remove()
-
+            if(user.checked) {
+                selected_for_all.selected -= 1;
+            }
+            if(user.active) {
+                selected_for_all.active -= 1;
+            }
             renderUsers(usersList)
         }
+
+        btn1.onclick = () => {
+            const formFullName = document.querySelector('#formFullName');
+            const formUsername = document.querySelector('#formUsername');
+            const formEmail = document.querySelector('#formEmail');
+            const formAbout = document.querySelector('#formAbout');
+            const modalTitle = document.querySelector('h5[class="modal-title"]')
+            const modalBtn = document.querySelector('#modalBtn')
+            const currentPassword = document.querySelector('#currentPassword')
+            const newPassword = document.querySelector('#newPassword')
+
+            modalBtn.textContent = "Save Changes"
+            modalTitle.textContent = 'Edit user'
+            formUsername.value = user.username
+            formFullName.value = user.name
+            formAbout.value = user.about
+            formEmail.disabled = true
+            currentPassword.disabled = false
+            newPassword.disabled = true
+            formEmail.value = user.email
+
+        }
+
     }
+    window.localStorage.setItem('users', JSON.stringify(users))
+    window.localStorage.setItem('all-checked', JSON.stringify(checked_checkbox))
+    window.localStorage.setItem('selected', JSON.stringify(selected_for_all))
 
 }
 
-
-checkbox.addEventListener('change', function () {
-    if (this.checked) {
+checkbox.addEventListener('change', function() {
+    if(this.checked) {
         checked_checkbox = true
-        for (let user of users) {
+        for(let user of users) {
             user.checked = true
         }
         selected.textContent = '/' + ' ' + users.length
         selected_for_all.selected = users.length
     } else {
-        for (let user of users) {
+        for(let user of users) {
             user.checked = false
         }
         selected.textContent = '/' + ' ' + 0
@@ -159,13 +171,19 @@ checkbox.addEventListener('change', function () {
     window.localStorage.setItem('all-checked', JSON.stringify(checked_checkbox))
     window.localStorage.setItem('users', JSON.stringify(users))
     renderUsers(users)
-        })
+})
+
 searchName.addEventListener("input", ()=>{
     const regex = new RegExp(searchName.value, 'gi')
     const res = users.filter((e) => e.name.match(regex))
+    selected_for_all.active = 0
+    selected_for_all.selected = 0
+    if(res.length) {
+        for(let user of res) {
+            if(user.checked) selected_for_all.selected += 1
+            if(user.active) selected_for_all.active += 1
+        }
+    }
+    window.localStorage.setItem('selected', JSON.stringify(selected_for_all))
     renderUsers(res)
 })
-
-function createELement(...arr) {
-    return arr.map( el => document.createElement(el))
-}

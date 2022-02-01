@@ -1,3 +1,11 @@
+const month = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+];
+
+function createElements(...tagNames){
+    return tagNames.map(tag => document.createElement(tag))
+}
+
 const spanAll = document.querySelector("#All")
 const activeSpan = document.querySelector("#Active")
 const selectedSpan = document.querySelector('#Selected')
@@ -5,7 +13,6 @@ spanAll.addEventListener("click", (event) => {
     event.preventDefault()
     checked_checkbox = false
     renderUsers(users)
-    console.log("abror")
 })
 
 activeSpan.addEventListener("click", (event) => {
@@ -15,7 +22,7 @@ activeSpan.addEventListener("click", (event) => {
     renderUsers(res)
 })
 
-selectedSpan.addEventListener("click",() =>{
+selectedSpan.addEventListener("click",(event) =>{
     event.preventDefault()
     let res = users.filter((el)=> el.checked===true)
     checked_checkbox = true
